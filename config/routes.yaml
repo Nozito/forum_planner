@@ -3,3 +3,15 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+register:
+    path: /register
+    controller: App\Controller\SecurityController::register
+
+login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+forgot_password:
+    path: /forgot-password
+    controller: App\Controller\SecurityController::forgotPassword
