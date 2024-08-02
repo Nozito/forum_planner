@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,6 +32,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    /**
+     * @var Collection<int, Group>
+     */
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'members')]
+    private Collection $groupss;
+
+    /**
+     * @var Collection<int, Forum>
+     */
+    #[ORM\OneToMany(targetEntity: Forum::class, mappedBy: 'user')]
+    private Collection $forums;
+
+    #[ORM\ManyToOne(inversedBy: 'owner')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Group $ownedGroups = null;
+
+    public function __construct()
+    {
+        $this->groupss = new ArrayCollection();
+        $this->forums = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,5 +131,83 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Group>
+     */
+    public function getGroupss(): Collection
+    {
+        return $this->groupss;
+    }
+
+    public function addGroupss(Group $groupss): static
+    {
+        if (!$this->groupss->contains($groupss)) {
+            $this->groupss->add($groupss);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupss(Group $groupss): static
+    {
+        $this->groupss->removeElement($groupss);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Forum>
+     */
+    public function getForums(): Collection
+    {
+        return $this->forums;
+    }
+
+    public function addForum(Forum $forum): static
+    {
+        if (!$this->forums->contains($forum)) {
+            $this->forums->add($forum);
+            $forum->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForum(Forum $forum): static
+    {
+        if ($this->forums->removeElement($forum)) {
+            // set the owning side to null (unless already changed)
+            if ($forum->getUser() === $this) {
+                $forum->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getOwnedGroups(): ?Group
+    {
+        return $this->ownedGroups;
+    }
+
+    public function setOwnedGroups(?Group $ownedGroups): static
+    {
+        $this->ownedGroups = $ownedGroups;
+
+        return $this;
     }
 }
