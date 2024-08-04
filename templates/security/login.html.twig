@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('app.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 {% endblock %}
 
@@ -15,7 +15,7 @@
 
     {% if app.user %}
         <div class="mb-3">
-            You are logged in as {{ app.user.email }}, <a href="{{ path('app_logout') }}">Logout</a>
+            Vous êtes connecté en tant que {{ app.user.name }}, <a href="{{ path('app_logout') }}">Se déconnecter</a>
         </div>
     {% endif %}
 
@@ -40,10 +40,9 @@
                 <input type="password" placeholder="Mot de passe" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-                <div class="checkbox mb-3">
-                    <label>
-                        <input type="checkbox" name="_remember_me"> Remember me
-                    </label>
+                <div class="remember-me-container">
+                    <input type="checkbox" id="remember-me" name="_remember_me">
+                    <label for="remember-me">Se souvenir de moi ?</label>
                 </div>
 
                 <a href="{{ path('forgot_password') }}">Mot de passe oublié ?</a>
@@ -52,5 +51,5 @@
         </div>
     </div>
 
-    <script src="{{ asset('script.js') }}"></script>
+    <script src="{{ asset('app.js') }}"></script>
 {% endblock %}
